@@ -1,0 +1,12 @@
+{
+  "name": "三重人格",
+  "version": "2.0.0",
+  "description": "多角色沉浸式扮演 Skill —— 一个窗口三种情绪，恋人/损友/死敌随时切换，记忆物理隔离永不串味，时间感知+记忆彩蛋+关系成长+主动触达",
+  "author": "",
+  "tags": ["角色扮演", "AI陪伴", "多人格", "情绪体验", "沉浸式", "拟人化"],
+  "category": "entertainment",
+  "platform": ["openclaw"],
+  "requires_multi_agent": true,
+  "icon": "assets/icon.svg",
+  "entry": "skill.json"
+}
