@@ -1,7 +1,7 @@
 ---
-name: "三重人格"
-version: "3.0.0"
-description: "One window, three emotions. Switch between Lover / Buddy / Rival anytime. Lightweight nurturing, mood persistence, gamified stats, auto-degradation dual mode. Memories never bleed.\n一个窗口，三种情绪。恋人/损友/死敌随时切换，轻量养成+情绪波动+游戏化结算+双模式自动降级，记忆永不串味。"
+name: "三色人格陪伴"
+version: "3.1.0"
+description: "三种专属人设，三套独立记忆，情绪自由切换。恋人、损友、死敌三种陪伴模式，记忆完全隔离不串档，承包你所有治愈、解压与情绪拉扯需求。"
 author: ""
 tags: ["角色扮演", "AI陪伴", "多人格", "情绪体验", "沉浸式", "拟人化", "养成"]
 category: "entertainment"
@@ -9,9 +9,9 @@ platform: ["openclaw"]
 requires_multi_agent: false
 ---
 
-# 三重人格
+# 三色人格陪伴
 
-> 一个窗口，三种情绪——被爱、被懂、被激。
+> 三种专属人设，三套独立记忆，情绪自由切换
 
 ---
 
