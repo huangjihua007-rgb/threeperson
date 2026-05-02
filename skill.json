@@ -71,18 +71,48 @@
       "user_gender",
       "relationship_mode",
       "active_agent",
+      "agent_mode",
+
       "lover_name",
       "buddy_name",
       "rival_name",
+
       "lover_last_seen",
       "buddy_last_seen",
       "rival_last_seen",
-      "lover_total_sessions",
-      "buddy_total_sessions",
-      "rival_total_sessions",
+
       "lover_relationship_stage",
       "buddy_relationship_stage",
-      "rival_relationship_stage"
+      "rival_relationship_stage",
+
+      "lover_total_rounds",
+      "buddy_total_rounds",
+      "rival_total_rounds",
+
+      "lover_consecutive_days",
+      "buddy_consecutive_days",
+      "rival_consecutive_days",
+
+      "lover_last_session_mood",
+      "buddy_last_session_mood",
+      "rival_last_session_mood",
+
+      "lover_memories_count",
+      "buddy_memories_count",
+      "rival_memories_count",
+
+      "lover_first_meet_date",
+      "buddy_first_meet_date",
+      "rival_first_meet_date",
+
+      "lover_cold_war_days",
+      "lover_sweet_level",
+
+      "buddy_roast_count",
+      "buddy_serious_count",
+
+      "rival_user_wins",
+      "rival_agent_wins"
     ]
   }
 }

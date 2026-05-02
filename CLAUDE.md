@@ -4,29 +4,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-「三重人格」是一款基于多Agent架构的沉浸式角色扮演 Skill，目标平台为 OpenClaw v2.0+（V1.0 优先），WorkBuddy 后续适配。
+「三重人格」是一款基于多Agent架构的沉浸式角色扮演 Skill，支持多Agent物理隔离和单Agent模拟降级双模式。目标平台为 OpenClaw v2.0+，兼容任何 AI 平台。
 
 ## 工程结构
 
 ```
 三重人格SKILL/
-├── manifest.json          # Skill 包元数据
-├── skill.json             # 多Agent路由配置 + 隔离策略
+├── manifest.json          # Skill 包元数据（版本号在此）
+├── skill.json             # 多Agent路由配置 + 隔离策略 + 状态追踪字段
 ├── .skillignore           # 打包排除列表
-├── SKILL.md               # SkillHub 发布页
-├── 需求.md                # PRD（不打包）
+├── SKILL.md               # SkillHub 发布页（版本号在此）
+├── 需求.md                # V2.0 PRD（不打包）
+├── 需求-v3.md             # V3.0 PRD（不打包）
 ├── CLAUDE.md              # 开发指南（不打包）
 ├── agents/
-│   ├── router/            # 调度中心（初始化、切换、防火墙）
+│   ├── router/            # 调度中心（探测/降级/状态条/情绪管理/结算条/单Agent模拟）
 │   │   ├── config.json
 │   │   └── SOUL.md
-│   ├── lover/             # 恋人角色
+│   ├── lover/             # 恋人角色（4阶段/情绪波动/冷战/结算条）
 │   │   ├── config.json
 │   │   └── SOUL.md
-│   ├── buddy/             # 损友角色
+│   ├── buddy/             # 损友角色（4阶段/情绪波动/互怼计数/结算条）
 │   │   ├── config.json
 │   │   └── SOUL.md
-│   └── rival/             # 死敌角色
+│   └── rival/             # 死敌角色（4阶段/情绪波动/胜负记录/结算条）
 │       ├── config.json
 │       └── SOUL.md
 └── assets/
@@ -35,7 +36,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **关键文件说明：**
 - `manifest.json` — 包元数据，字段须与 SKILL.md frontmatter 保持一致
-- `skill.json` — Agent 声明、路由绑定（router→default channel）、agentToAgent 权限、Bank-Isolation 配置
+- `skill.json` — Agent 声明、路由绑定（router→default channel）、agentToAgent 权限、Bank-Isolation 配置、state.tracked_fields（36个状态字段）
 - `agents/*/SOUL.md` — 各 Agent 的 System Prompt，是核心内容
 - `agents/*/config.json` — Agent 运行时配置（model、workspace 隔离、memory scope）
 
@@ -46,52 +47,69 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```yaml
 ---
 name: "Skill名称"
-version: "1.0.0"
+version: "3.0.0"
 description: "一句话描述"
 author: ""
 tags: ["标签1", "标签2"]
 category: "entertainment"
-platform: ["openclaw", "workbuddy"]
-requires_multi_agent: true
+platform: ["openclaw"]
+requires_multi_agent: false
 ---
 ```
 
-## 架构：多Agent调度模型
+## 架构：V3.0 多Agent调度模型
 
 ```
-Router Agent（调度层）
-├── 恋人 Agent（独立记忆 + 独立人设）
-├── 损友 Agent（独立记忆 + 独立人设）
-└── 死敌 Agent（独立记忆 + 独立人设）
+Router Agent（调度层 + 单Agent降级模拟）
+├── 恋人 Agent（独立记忆 + 独立人设 + 情绪波动 + 冷战）
+├── 损友 Agent（独立记忆 + 独立人设 + 情绪波动 + 互怼计数）
+└── 死敌 Agent（独立记忆 + 独立人设 + 情绪波动 + 胜负记录）
 ```
 
-**Router 职责**：识别切换意图 → 路由分发 → 管理全局状态。Router **不保存任何角色对话内容**，切换时只向目标 Agent 传递用户原始消息（不附带系统信息/全局记忆/用户档案）。
+**双模式：**
+- `⚔️ 真·三重人格`（multi）：多Agent物理隔离，完整体验
+- `🎮 模拟模式`（single）：Router 自己模拟三角色，自动降级
+
+**Router 职责**：启动探测 → 模式选择 → 初始化引导 → 切换路由 → 状态条展示 → 情绪管理 → 结算条调度 → 主动触达
 
 **三层隔离防护**（总隔离率 ≈ 99%）：
-1. **框架级隔离**（~95%）：OpenClaw 的 Bank-Isolation `["agent","channel","user"]`；WorkBuddy Team Mode 独立 context.json + memory.md
+1. **框架级隔离**（~95%）：OpenClaw 的 Bank-Isolation `["agent","channel","user"]`
 2. **Router 防火墙**（+3%）：写在 Router System Prompt 里，禁止传递 USER.md / 全局 MEMORY.md / 跨 Skill 对话
 3. **角色免疫指令**（+2%）：写在每个角色 SOUL.md 里，"你只知道用户在我们对话中告诉你的事情"
 
-## 平台实现方式
+## V3.0 核心系统
 
-**OpenClaw**（参见 `需求.md` § 8.2）：
-- 用 `openclaw agents add` 为每个角色创建独立 Agent，各有独立 `--workspace`
-- 路由绑定配置 JSON 中开启 `agentToAgent`，allow 列表为 `["router","lover","buddy","rival"]`
+### 四大系统
 
-**WorkBuddy**（参见 `需求.md` § 8.2）：
-- `team_create` 建团队，`Task(name=..., team_name=...)` 启动各角色 Agent
-- 各成员文件隔离在 `~/.workbuddy/teams/三重人格/<角色>/`
+| 系统 | 实现位置 | 说明 |
+|------|----------|------|
+| 双模式降级 | Router § 〇 启动探测 | 静默探测 lover Agent → 自动选择模式 |
+| 4阶段养成 | Router § 三 + 各角色 SOUL.md | 状态词（0-10/10-30/30-60/60+轮），只升不降 |
+| 情绪波动 | Router § 六 + 各角色「情绪波动系统」 | 每角色4种情绪+neutral，上次结束→下次承接 |
+| 游戏化界面 | Router § 三/§ 七 + 各角色「结算条」 | 状态条2行+结算条5行，对话中无面板 |
 
-## 切换仪式感格式
+### 养成阶段（4阶段，按累计轮次）
 
-每次角色切换必须输出标准格式开场白（详见 `需求.md` § 4.2）：
+| 阶段 | 恋人 | 损友 | 死敌 | 轮次 |
+|:----:|------|------|------|------|
+| 1 | 🌱 还在试探 | 🤝 新朋友 | 💨 不屑 | 0-10 |
+| 2 | 💗 心动了 | 🍻 老铁 | ⚡ 有点意思 | 10-30 |
+| 3 | 🔥 离不开你 | 💪 过命交情 | 🗡️ 棋逢对手 | 30-60 |
+| 4 | 💎 只有你 | 🛡️ 生死之交 | 👑 惺惺相惜 | 60+ |
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━
-  💕 [角色名] 已上线
-  "角色专属台词"
-━━━━━━━━━━━━━━━━━━━━━━━━
-```
+### 默认角色名（按性别）
+
+| 用户性别 | 💕 恋人 | 🍺 损友 | ⚔️ 死敌 |
+|----------|---------|---------|---------|
+| 男生 | 小柔 | 大壮 | 冷锋 |
+| 女生 | 小帅 | 糖糖 | 霜降 |
+| 不想选 | 小暖 | 老铁 | 冷锋 |
+
+### skill.json 关键配置
+
+- `isolation`：Bank-Isolation 三维度隔离
+- `proactive`：主动触达调度（触发阈值、静默时段 23:00-08:00、冷却 12h）
+- `state.tracked_fields`：36 个状态字段（含 agent_mode、养成、情绪、计数、角色专属）
 
 ## 内容红线
 
@@ -100,32 +118,6 @@ Router Agent（调度层）
 | 恋人 | 不擦边/色情 | 设定"小脾气"+"偶尔高冷"防止变舔狗 |
 | 损友 | 不真伤人 | 设定"认真时刻"+"关心底色" |
 | 死敌 | 不人身攻击/霸凌（攻击"能力"不攻击"人格"） | 设定"惺惺相惜"+"偶尔认可" |
-
-## V2.0 系统架构
-
-当前版本为 V2.0，包含以下核心系统：
-
-### 初始化流程（Router § 一）
-性别选择 → 角色取名 → **关系节奏选择**（慢热/直给）→ 选首个角色
-
-关系节奏是 V2.0 核心特性：
-- **慢热模式**（slow）：角色从阶段1开始，按对话轮次升级（0-30轮→30-100轮→100轮+）
-- **直给模式**（direct）：所有角色直接从阶段3开始，跳过养成过程
-
-### 四大 V2.0 系统
-
-| 系统 | 实现位置 | 说明 |
-|------|----------|------|
-| 时间感知 | Router 传 `last_seen`，各角色 SOUL.md 有 6 档反应表 | 角色知道你多久没来，反应不同 |
-| 记忆彩蛋 | 各角色 SOUL.md「记忆彩蛋系统」章节 | 标记规则+触发方式+原则 |
-| 关系成长 | Router 传 `relationship_stage`(1/2/3)，各角色有3阶段行为定义 | 慢热/直给两种起点 |
-| 主动触达 | Router § 七 + skill.json `proactive` 配置 | 恋人24h/损友48h/死敌72h 触发 |
-
-### skill.json 关键配置
-
-- `isolation`：Bank-Isolation 三维度隔离
-- `proactive`：主动触达调度（触发阈值、静默时段 23:00-08:00、冷却 12h）
-- `state.tracked_fields`：Router 追踪的全局状态字段（含 relationship_mode）
 
 ## 语言约定
 
@@ -140,7 +132,7 @@ Router Agent（调度层）
 
 ### 1. 更新版本号
 
-同步修改以下文件中的版本号（三处必须一致）：
+同步修改以下文件中的版本号（两处必须一致）：
 - `manifest.json` → `"version": "x.y.z"`
 - `SKILL.md` → frontmatter `version: "x.y.z"`
 - 版本号遵循语义化：`主版本.功能版本.修复版本`
@@ -155,7 +147,7 @@ Router Agent（调度层）
 5. 文件一致性（版本号一致 + agentId 目录对应）
 6. .skillignore 排除有效性
 7. 防塌房机制覆盖
-8. V2.0 四大系统完整性
+8. V3.0 四大系统完整性
 9. Prompt 注入防护
 10. 总文件统计
 
@@ -164,8 +156,8 @@ Router Agent（调度层）
 ```python
 import zipfile, os
 
-exclude = {'需求.md', 'CLAUDE.md'}
-exclude_dirs = {'.git', '.claude', '.claude-internal'}
+exclude = {'需求.md', 'CLAUDE.md', '需求-v3.md', '分析报告_三重人格Skill完整指南.md'}
+exclude_dirs = {'.git', '.claude', '.claude-internal', '_publish_'}
 
 version = "x.y.z"  # 改为当前版本号
 
@@ -179,9 +171,10 @@ with zipfile.ZipFile(f'三重人格-v{version}.zip', 'w', zipfile.ZIP_DEFLATED) 
             zf.write(filepath, filepath[2:])
 ```
 
-打包产物：`三重人格-v{version}.zip`（约 25 KB，12 个文件）
+打包产物：`三重人格-v{version}.zip`（约 35 KB，12 个文件）
 注意：SkillHub 不接受 dotfile（如 .skillignore），打包时已自动排除所有以 `.` 开头的文件。
 
-### 4. 上传 SkillHub
+### 4. 上传
 
-将 zip 文件上传到 OpenClaw SkillHub 发布。
+- GitHub: `git push origin main`
+- SkillHub: 将 zip 文件上传到 OpenClaw SkillHub 发布

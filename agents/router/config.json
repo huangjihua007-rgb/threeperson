@@ -1,6 +1,6 @@
 {
   "agentId": "router",
-  "model": "claude-sonnet",
+  "model": "auto",
   "soul": "SOUL.md",
   "workspace": {
     "isolated": true,
