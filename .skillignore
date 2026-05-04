@@ -4,3 +4,4 @@ CLAUDE.md
 .claude/
 .claude-internal/
 *.log
+previews/

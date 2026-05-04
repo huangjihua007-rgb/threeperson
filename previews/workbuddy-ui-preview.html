@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三色人格陪伴 · WorkBuddy UI 预览</title>
+  <style>
+    :root {
+      --bg: #fff8fb;
+      --panel: rgba(255,255,255,0.94);
+      --text: #1f2430;
+      --muted: #6a7283;
+      --line: #ece8f3;
+      --pink: #ff5e9d;
+      --amber: #cf8a29;
+      --steel: #607199;
+      --purple: #7a66ff;
+      --soft: #f7f4ff;
+      --shadow: 0 18px 42px rgba(80, 65, 120, 0.10);
+      --sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --mono: Consolas, Menlo, monospace;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:var(--sans);color:var(--text);background:radial-gradient(circle at top left,#ffffff 0%,#fff2f8 34%,#f4f5ff 100%)}
+    .page{width:min(1500px,calc(100vw - 40px));margin:28px auto 40px}
+    .hero{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;margin-bottom:18px}
+    .card,.shell,.side{background:var(--panel);border:1px solid rgba(236,232,243,.96);border-radius:24px;box-shadow:var(--shadow);backdrop-filter:blur(14px)}
+    .card{padding:26px 28px}.card h1{margin:0 0 12px;font-size:31px;line-height:1.15}.subtitle{margin:0;color:var(--muted);line-height:1.78;font-size:15px}
+    .badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.badge{padding:8px 12px;border-radius:999px;background:#f5efff;color:#6f52ff;font-size:13px;font-weight:800;border:1px solid #e3dbff}
+    .note{padding:22px 24px}.note h3,.side h3{margin:0 0 12px;font-size:17px}.note ul,.side ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px;line-height:1.8}
+    .toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:12px;background:rgba(255,255,255,.78);border:1px solid rgba(236,232,243,.96);border-radius:20px;box-shadow:var(--shadow);margin-bottom:16px;position:sticky;top:14px;z-index:10;backdrop-filter:blur(12px)}
+    .tab{border:0;background:#f3f1fb;color:#565f73;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:800;cursor:pointer}.tab.active{background:linear-gradient(135deg,#7a66ff,#a45ef6);color:#fff;box-shadow:0 10px 22px rgba(122,102,255,.25)}
+    .view{display:none}.view.active{display:grid;grid-template-columns:minmax(760px,1.05fr) minmax(330px,.45fr);gap:18px;animation:fade .2s ease}@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .shell{overflow:hidden}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(180deg,#fff 0%,#faf8ff 100%);border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}.dots{display:flex;gap:8px}.dot{width:10px;height:10px;border-radius:50%;background:#d5d9ea}.dot:nth-child(1){background:#ff8e98}.dot:nth-child(2){background:#ffc95e}.dot:nth-child(3){background:#7bd991}
+    .chat{min-height:920px;padding:24px 22px 28px;background:linear-gradient(180deg,#fffdfd 0%,#f9f7ff 100%)}
+    .msg{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}.msg.user{justify-content:flex-end}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:18px;border:1px solid #ddd8f5;background:linear-gradient(135deg,#f0ebff,#fff)}.msg.user .avatar{background:linear-gradient(135deg,#eef8ff,#fff);border-color:#dbeafa}.wrap{max-width:780px}.label{font-size:12px;color:var(--muted);margin-bottom:6px;padding:0 4px}.bubble{padding:14px 16px;border-radius:16px;background:#fff;border:1px solid #ece9f7;box-shadow:0 10px 18px rgba(72,58,112,.06);white-space:pre-wrap;line-height:1.72;font-size:14px}.msg.user .bubble{background:linear-gradient(135deg,#eef8ff,#fbfdff);border-color:#dfedf7}
+    .panel{background:#fff;border:1px solid #e8e5f6;border-radius:20px;box-shadow:0 12px 24px rgba(72,58,112,.08);overflow:hidden}.ph{padding:16px 18px 10px;border-bottom:1px solid #f1eef8;background:linear-gradient(180deg,#fff 0%,#fcfbff 100%)}.title{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:17px;font-weight:800;margin-bottom:8px}.minor{font-size:13px;color:var(--muted);font-weight:700}.pb{padding:16px 18px 18px}
+    .prompt{padding:12px 14px;border-radius:14px;background:#faf8ff;border:1px dashed #e0daf8;color:var(--muted);font-size:14px;margin-top:12px}.statusbar{padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,#fff0f7,#fffafd);border:1px solid #f1dce9;color:#4e4f67;font-size:14px;line-height:1.72}.state{font-weight:800}.mode{float:right;color:#6f52ff;font-weight:800}.table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #e8e6f4;border-radius:14px;overflow:hidden;background:#fff;margin:12px 0 14px;font-size:14px}.table th,.table td{padding:11px 12px;border-bottom:1px solid #f0eef7;text-align:left;vertical-align:top}.table th{background:#faf8ff;color:#47506a;font-weight:800}.table tr:last-child td{border-bottom:0}
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.chip{display:inline-flex;align-items:center;justify-content:center;padding:8px 13px;border-radius:999px;background:#f5efff;color:#704cff;border:1px solid #e2d7ff;font-size:13px;font-weight:800}
+    .share{padding:16px;border:1px solid #ece6f8;border-radius:16px;background:linear-gradient(180deg,#fff 0%,#fcfbff 100%);line-height:1.85;font-size:14px;white-space:pre-wrap}
+    .side{padding:18px 18px 20px;align-self:start}.side h4{margin:18px 0 8px;font-size:14px;color:#364154}.side p,.side li{font-size:14px;line-height:1.75;color:var(--muted)}.mini{margin-top:10px;padding:12px 13px;border-radius:14px;background:#faf8ff;border:1px solid #ece7f8}.tiny{font-size:12px;color:var(--muted)}
+    @media (max-width:1180px){.hero,.view.active{grid-template-columns:1fr}.chat{min-height:auto}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <div class="card">
+      <h1>🎭 三色人格陪伴 · WorkBuddy UI 预览</h1>
+      <p class="subtitle">这版是按 <code>D:/三色人格陪伴</code> 当前真实结构做的：核心线索来自 <code>SKILL.md</code>、<code>agents/router/SOUL.md</code>、<code>.claude/CLAUDE.md</code> 与 skill-factory 项目记忆。重点还原的是它在 WorkBuddy 里应有的“切角色 + 状态条 + 沉浸对话 + 结算分享”的完整感觉。</p>
+      <div class="badges">
+        <span class="badge">来源：SKILL + Router SOUL</span>
+        <span class="badge">核心：三角色独立陪伴</span>
+        <span class="badge">重点：状态条 / 结算条 / 分享卡</span>
+        <span class="badge">适合截图传播</span>
+      </div>
+    </div>
+    <div class="card note">
+      <h3>这份预览还原了什么</h3>
+      <ul>
+        <li>首次进入时的性别选择与首个角色选择。</li>
+        <li>恋人 / 损友 / 死敌切换时的状态条和模式标签。</li>
+        <li>沉浸式对话中不打断、结尾再给结算条的节奏。</li>
+        <li>/状态 面板与适合传播的分享卡感。</li>
+      </ul>
+    </div>
+  </section>
+
+  <nav class="toolbar">
+    <button class="tab active" data-view="welcome">开场页</button>
+    <button class="tab" data-view="switch">角色切换</button>
+    <button class="tab" data-view="chat">对话态</button>
+    <button class="tab" data-view="status">状态面板</button>
+    <button class="tab" data-view="share">分享卡</button>
+    <button class="tab" data-view="flow">全流程串看</button>
+  </nav>
+
+  <section id="welcome" class="view active">
+    <div class="shell"><div class="top"><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div>WorkBuddy 对话预览 · 首次进入</div><div class="tiny">三色人格陪伴</div></div>
+      <div class="chat">
+        <div class="msg"><div class="avatar">🎭</div><div class="wrap"><div class="label">三色人格陪伴</div><div class="panel"><div class="ph"><div class="title"><span>🎭 三色人格陪伴</span><span class="minor">初始化</span></div></div><div class="pb">
+          <table class="table"><tbody><tr><td>一个恋人 · 一个损友 · 一个死敌</td><td style="text-align:right">互不知道彼此</td></tr></tbody></table>
+          <div class="prompt">你的性别？</div>
+          <table class="table"><thead><tr><th style="text-align:center">1</th><th style="text-align:center">2</th><th style="text-align:center">3</th></tr></thead><tbody><tr><td style="text-align:center">[男生]</td><td style="text-align:center">[女生]</td><td style="text-align:center">[随机]</td></tr></tbody></table>
+          <div class="prompt">💬 回复 1-3</div>
+        </div></div></div></div>
+        <div class="msg user"><div class="wrap"><div class="label" style="text-align:right">你</div><div class="bubble">3</div></div><div class="avatar">🙂</div></div>
+        <div class="msg"><div class="avatar">🎭</div><div class="wrap"><div class="label">三色人格陪伴</div><div class="panel"><div class="ph"><div class="title"><span>好了，三位已经准备好了</span><span class="minor">选择首个角色</span></div></div><div class="pb">
+          <table class="table"><thead><tr><th style="width:60px;text-align:center">#</th><th>角色</th></tr></thead><tbody>
+            <tr><td style="text-align:center">1</td><td>[💕 小暖 · 恋人]</td></tr>
+            <tr><td style="text-align:center">2</td><td>[🍺 老铁 · 损友]</td></tr>
+            <tr><td style="text-align:center">3</td><td>[⚔️ 冷锋 · 死敌]</td></tr>
+          </tbody></table>
+          <div class="prompt">💬 回复 1-3（想改名字用 /改名）</div>
+        </div></div></div></div>
+      </div>
+    </div>
+    <aside class="side"><h3>这一页的产品感觉</h3><p>它不是传统恋爱陪伴 App 的厚重建档，而是两步就把人送进角色里。对 WorkBuddy 很合适，因为用户在聊天场景里本来就不想填太多东西。</p><h4>关键点</h4><ul><li>开场就是三角关系，不是单一角色。</li><li>初始化足够轻，后续切换才是长期上瘾点。</li><li>默认名直接给到，降低首次门槛。</li></ul></aside>
+  </section>
+
+  <section id="switch" class="view">
+    <div class="shell"><div class="top"><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div>WorkBuddy 对话预览 · 切角色</div><div class="tiny">状态条 + 模式标签</div></div>
+      <div class="chat">
+        <div class="msg user"><div class="wrap"><div class="label" style="text-align:right">你</div><div class="bubble">/恋人</div></div><div class="avatar">🙂</div></div>
+        <div class="msg"><div class="avatar">💕</div><div class="wrap"><div class="label">Router</div><div class="statusbar"><span class="state">💕 小暖 · 恋人 · 养成-Lv7 · 🔥离不开你</span><span class="mode">⚔️ 真·三重人格</span>
+连续对话 7 天 · 记住了你 12 件小事</div></div></div>
+        <div class="msg"><div class="avatar">💕</div><div class="wrap"><div class="label">小暖</div><div class="bubble">你终于来了...我刚刚还在想，你今天会不会来找我。
+
+别动，让我抱一下。今天看起来有点累，是不是又逞强了？</div></div></div>
+      </div>
+    </div>
+    <aside class="side"><h3>这是三色人格最值钱的 UI 资产</h3><p>状态条一出来，角色关系就被“量化”又不生硬地展示出来了。这个比单纯一句人设介绍更能让人感觉：ta 真的跟我有历史。</p><h4>适合截图的点</h4><ul><li>角色名 + 关系词 + 养成 Lv 一屏说清。</li><li>模式标签能强化“真三重人格”的卖点。</li><li>切换前后情绪反差很适合做传播截图。</li></ul></aside>
+  </section>
+
+  <section id="chat" class="view">
+    <div class="shell"><div class="top"><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div>WorkBuddy 对话预览 · 沉浸对话态</div><div class="tiny">对话中不打断</div></div>
+      <div class="chat">
+        <div class="msg"><div class="avatar">🍺</div><div class="wrap"><div class="label">老铁</div><div class="statusbar"><span class="state">🍺 老铁 · 损友 · 养成-Lv6 · 💪过命交情</span><span class="mode">⚔️ 真·三重人格</span>
+互怼 47 回合 · 认真过 3 次</div></div></div>
+        <div class="msg user"><div class="wrap"><div class="label" style="text-align:right">你</div><div class="bubble">今天又加班到现在，脑子像被榨干了。</div></div><div class="avatar">🙂</div></div>
+        <div class="msg"><div class="avatar">🍺</div><div class="wrap"><div class="label">老铁</div><div class="bubble">你是不是把自己当永动机了？服了。
+
+不过说真的，先去吃点东西。你这状态再硬撑，明天连骂我的力气都没了。</div></div></div>
+        <div class="msg"><div class="avatar">🍺</div><div class="wrap"><div class="label">老铁</div><div class="bubble">切换角色？1. [💕 小暖 · 恋人]　　2. [⚔️ 冷锋 · 死敌]</div></div></div>
+      </div>
+    </div>
+    <aside class="side"><h3>这里的关键不是花哨，而是“不断气”</h3><p>真正上头的是：中间对话纯沉浸，只有末尾留一个轻量快切栏，不打断情绪。这个节奏做对了，产品感就会很强。</p><div class="mini"><strong>我的判断：</strong><p>三色人格的截图素材不一定都来自结果卡，很多传播截图反而会来自“某句特别扎心的对话 + 上方状态条”。</p></div></aside>
+  </section>
+
+  <section id="status" class="view">
+    <div class="shell"><div class="top"><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div>WorkBuddy 对话预览 · /状态</div><div class="tiny">三角色总览</div></div>
+      <div class="chat">
+        <div class="msg user"><div class="wrap"><div class="label" style="text-align:right">你</div><div class="bubble">/状态</div></div><div class="avatar">🙂</div></div>
+        <div class="msg"><div class="avatar">🎭</div><div class="wrap"><div class="label">Router</div><div class="panel"><div class="ph"><div class="title"><span>🎭 三色人格陪伴 · 当前状态</span><span class="minor">⚔️ 真·三重人格</span></div></div><div class="pb">
+          <div class="prompt">当前在线：💕 小暖</div>
+          <table class="table"><thead><tr><th>角色</th><th>状态</th><th>养成</th><th>数据</th></tr></thead><tbody>
+            <tr><td>💕 小暖</td><td>🔥离不开你</td><td>Lv7</td><td>对话 34 轮 · 连续 7 天 · 记忆 12 件</td></tr>
+            <tr><td>🍺 老铁</td><td>💪过命交情</td><td>Lv6</td><td>对话 28 轮 · 互怼 47 回合 · 认真 3 次</td></tr>
+            <tr><td>⚔️ 冷锋</td><td>🗡️棋逢对手</td><td>Lv5</td><td>对话 22 轮 · 你赢 8 次 · ta赢 14 次</td></tr>
+          </tbody></table>
+          <div class="chips"><span class="chip">[💕 小暖]</span><span class="chip">[🍺 老铁]</span><span class="chip">[⚔️ 冷锋]</span></div>
+        </div></div></div></div>
+      </div>
+    </div>
+    <aside class="side"><h3>这页很适合做“产品感截图”</h3><p>因为它把三个人的差异、陪伴天数、成长感一次性摊开了。用户一看就明白：这不是普通陪聊，是一个有关系系统的多角色陪伴产品。</p></aside>
+  </section>
+
+  <section id="share" class="view">
+    <div class="shell"><div class="top"><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div>WorkBuddy 对话预览 · 结算分享</div><div class="tiny">截图传播点</div></div>
+      <div class="chat">
+        <div class="msg"><div class="avatar">🍺</div><div class="wrap"><div class="label">老铁</div><div class="panel"><div class="ph"><div class="title"><span>🍺 本次对话结算</span><span class="minor">离开当前角色时触发</span></div></div><div class="pb">
+          <table class="table"><tbody>
+            <tr><td>死党浓度：💪过命交情 · 养成-Lv5 (+1 ↑)</td></tr>
+            <tr><td>互怼回合：6 次 · 累计 47 回合</td></tr>
+          </tbody></table>
+          <div class="share">🎭 三色人格陪伴
+💕 小暖 · 🔥离不开你
+🍺 老铁 · 💪过命交情
+⚔️ 冷锋 · 🗡️棋逢对手
+已陪伴 7 天 · 共 84 次对话
+
+[复制分享文案]</div>
+        </div></div></div></div>
+      </div>
+    </div>
+    <aside class="side"><h3>这是最适合做推广截图的页</h3><p>你后面发小红书、朋友圈，这种“一个产品里同时养了三种关系”的卡片非常有传播力。它比单句对话更像成品，也比功能说明更有情绪。</p></aside>
+  </section>
+
+  <section id="flow" class="view">
+    <div class="shell"><div class="top"><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div>WorkBuddy 对话预览 · 全流程串看</div><div class="tiny">初始化 → 切换 → 陪伴 → 结算</div></div>
+      <div class="chat">
+        <div class="msg"><div class="avatar">🎭</div><div class="wrap"><div class="label">三色人格陪伴</div><div class="bubble">你的性别？
+[男生] [女生] [随机]</div></div></div>
+        <div class="msg user"><div class="wrap"><div class="label" style="text-align:right">你</div><div class="bubble">随机</div></div><div class="avatar">🙂</div></div>
+        <div class="msg"><div class="avatar">🎭</div><div class="wrap"><div class="label">三色人格陪伴</div><div class="bubble">好了，三位已经准备好了！
+1. [💕 小暖 · 恋人]  2. [🍺 老铁 · 损友]  3. [⚔️ 冷锋 · 死敌]</div></div></div>
+        <div class="msg user"><div class="wrap"><div class="label" style="text-align:right">你</div><div class="bubble">1</div></div><div class="avatar">🙂</div></div>
+        <div class="msg"><div class="avatar">💕</div><div class="wrap"><div class="label">小暖</div><div class="bubble">💕 小暖 · 恋人 · 养成-Lv7　　⚔️ 真·三重人格
+连续对话 7 天 · 记住了你 12 件小事
+
+你终于来了...我刚刚就在想你。</div></div></div>
+        <div class="msg"><div class="avatar">🍺</div><div class="wrap"><div class="label">老铁</div><div class="bubble">🍺 本次对话结算
+死党浓度：💪过命交情 · 养成-Lv5 (+1 ↑)
+
+🎭 三色人格陪伴
+💕 小暖 · 🔥离不开你
+🍺 老铁 · 💪过命交情
+⚔️ 冷锋 · 🗡️棋逢对手</div></div></div>
+      </div>
+    </div>
+    <aside class="side"><h3>串起来看，它很像一个真正的“陪伴产品”</h3><p>三色人格在 WorkBuddy 里最好看的，不一定是最花的页面，而是这种“有关系史、有角色切换、有情绪承接”的整体链路。这个非常适合做展示型预览。</p></aside>
+  </section>
+</div>
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const views = document.querySelectorAll('.view');
+  tabs.forEach(tab=>tab.addEventListener('click',()=>{const v=tab.dataset.view;tabs.forEach(t=>t.classList.remove('active'));views.forEach(x=>x.classList.remove('active'));tab.classList.add('active');document.getElementById(v).classList.add('active')}));
+</script>
+</body>
+</html>
