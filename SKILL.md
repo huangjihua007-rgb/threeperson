@@ -7,6 +7,12 @@ tags: ["角色扮演", "AI陪伴", "多人格", "情绪体验", "沉浸式", "�
 category: "entertainment"
 platform: ["openclaw"]
 requires_multi_agent: false
+runtime_requires:
+  node: null
+  python: null
+  system: []
+skill_requires: []
+install_check: null
 ---
 
 # 三色人格陪伴
