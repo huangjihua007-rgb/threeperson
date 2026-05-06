@@ -113,3 +113,7 @@ Or just talk naturally:
 ## License
 
 [MIT](LICENSE)
+
+## Download History
+
+[![Download History](https://skill-history.com/chart/huangjihua007-rgb/threeperson.svg)](https://skill-history.com/huangjihua007-rgb/threeperson)
