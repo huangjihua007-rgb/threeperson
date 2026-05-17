@@ -113,3 +113,7 @@ Or just talk naturally:
 ## License
 
 [MIT](LICENSE)
+
+---
+
+🌐 **更多精选 AI Skill → [Skill Manager](https://skillmanager.top)** — 122,818 个 Skill 覆盖 60 个赛道，4 维评分帮你挑，安装前安全体检。
